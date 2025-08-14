@@ -7,5 +7,5 @@ cfg = load_config()
 print(cfg.model.model_id, cfg.decoding.temperatures)
 
 # From the project root, run: python -m tests_scripts.test_config_loader
-# Result: mistralai/Mistral-7B-Instruct-v0.3 [0.0, 0.2, 0.5, 0.7]
+# Result: google/gemma-2-2b-it  [0.0, 0.2, 0.5, 0.7]
 # It worked

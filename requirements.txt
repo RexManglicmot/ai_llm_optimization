@@ -5,3 +5,5 @@ pandas
 matplotlib
 python-dotenv
 PyYAML
+torch
+mistral_inference

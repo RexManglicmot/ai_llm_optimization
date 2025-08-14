@@ -10,10 +10,12 @@ WRite core modules and very
 
 - DONE. config_loader: loads configs/default.yaml → Config object
 - DONE. data_loader. THIS WAS A PAIN!!
+- DONE. prompt_parser
+- DONE. HF model wrapper
 
-- START HERE. prompt_parser
-- HF model wrapper
-- evaluator
+- START HERE. evaluator
+ This is the runner.py
+
 - aggregator
 
 2 Smoke tests

@@ -4,14 +4,14 @@ dataset:
   test: data/clean/df_test_cleaned.parquet
 
 model:
-  model_id: mistralai/Mistral-7B-Instruct-v0.3
-  fourbit: true        # set to true if VRAM/RAM is tight
+  model_id: google/gemma-2-2b-it 
+  fourbit: false        
   max_new_tokens: 2
 
 decoding:
-  temperatures: [0.0, 0.2, 0.5, 0.7]
-  top_ps: [0.8, 0.9, 1.0]
-  seeds: [0, 1, 2]
+  temperatures: [0.0, 0.3, 0.7]
+  top_ps: [0.9, 1.0]
+  seeds: [0, 1, 2] # was 1 before now changed to back to 0 1 2
 
 # Store results
 paths:
