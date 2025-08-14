@@ -1,0 +1,7 @@
+transformers
+accelerate
+datasets
+pandas
+matplotlib
+python-dotenv
+PyYAML

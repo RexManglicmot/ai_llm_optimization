@@ -1,6 +1,32 @@
 ## Status
 Project is still undergoing
 
+0) DONE. 
+Set up - folders and deps, parquet files, fill out configs/default.yaml
+
+1 Working on.
+
+WRite core modules and very
+
+- DONE. config_loader: loads configs/default.yaml → Config object
+- DONE. data_loader. THIS WAS A PAIN!!
+
+- START HERE. prompt_parser
+- HF model wrapper
+- evaluator
+- aggregator
+
+2 Smoke tests
+
+
+3 Validation
+
+4 Final test (hold-outscore)
+
+5 Plots
+
+6
+
 ## Inspiration
 
 ## Introduciton
@@ -104,3 +130,8 @@ Temp | Top-p | Acc(val) | Acc±Std   | AvgTokens | Acc/Token
 Possible Resume Bullet:
 
 Optimized LLM decoding parameters for medical MCQs using the MMLU Professional Medicine dataset. Swept temperature and top-p values to identify settings that improved accuracy by 3.8% while maintaining output stability, delivering a reproducible evaluation framework.
+
+
+HF website:
+https://huggingface.co/datasets/cais/mmlu/tree/main/professional_medicine
+

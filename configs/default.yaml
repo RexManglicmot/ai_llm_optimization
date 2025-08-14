@@ -1,0 +1,22 @@
+dataset:
+  dev: data/clean/df_aux_cleaned.parquet
+  val: data/clean/df_val_cleaned.parquet
+  test: data/clean/df_test_cleaned.parquet
+
+model:
+  model_id: mistralai/Mistral-7B-Instruct-v0.3
+  fourbit: true        # set to true if VRAM/RAM is tight
+  max_new_tokens: 2
+
+decoding:
+  temperatures: [0.0, 0.2, 0.5, 0.7]
+  top_ps: [0.8, 0.9, 1.0]
+  seeds: [0, 1, 2]
+
+# Store results
+paths:
+  results_dir: results
+  val_raw: results/val_raw.csv
+  val_summary: results/val_summary.csv
+  test_final: results/test_final.csv
+

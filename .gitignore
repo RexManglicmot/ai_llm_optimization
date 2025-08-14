@@ -4,3 +4,10 @@ venv_ai_llm_optimization
 # Misc.
 notes/
 pics/
+
+# Other
+__pycache__/
+*.pyc
+.cache/
+.hf/
+results/
