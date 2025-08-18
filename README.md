@@ -12,13 +12,10 @@ WRite core modules and very
 - DONE. data_loader. THIS WAS A PAIN!!
 - DONE. prompt_parser
 - DONE. HF model wrapper
+- DONE. evaluator. This is the runner.py
+- DONE. aggregator. This is metrics.py
 
-- START HERE. evaluator
- This is the runner.py
-
-- aggregator
-
-2 Smoke tests
+2 START HERE. Smoke tests???....use Val dataset???? Need to thinknabout. ON run_val_sweep.py file
 
 
 3 Validation
@@ -29,7 +26,9 @@ WRite core modules and very
 
 6
 
-## Inspiration
+## Inspiration for this project
+
+On my road to become an AI person, this project came about for two reasons. The first reason came from my own endless curiosity. Optimization was a topic that I read about on the web and wanted to know more. In my own understanding, optimization can mean many things such as accuracy, latency, I/O, etc., the list goes on and on. One component is internal, onesuch is internal knobs like temperature. Another compoent is hardware and cloud services like an NVIDIA or AMD GPU and Google GPU, respectively. The latter componenent cost money, so I thought to myself that I would try to optimize internally and thus this project. The second reason is that some job postings preferred to have candidates to have some experience in optimization, and although it was NOT a hard requirement, I took the task upon myself to learn something new, out of my own free will, and gain a new perspective and appreciation in the growing, meteoric field of AI.
 
 ## Introduciton
 LLMs can answer multiple‑choice questions reasonably well, but decoding parameters (how the model chooses its next token) strongly influence both accuracy and cost. In production, teams tune these knobs to deliver reliable quality without overspending on tokens. This project replicates that real‑world workflow on a medical benchmark so the results are measurable and resume‑ready.
@@ -39,7 +38,21 @@ The goal of this project is to identify decoding parameter settings that maximiz
 Essentially, A small evaluation harness that sweeps decoding knobs (temperature, top-p) on a fixed zero-shot prompt and reports accuracy, stability, and token efficiency on medical MCQs.
 
 
+## Dataset
+
+The dataset is the Massive Multitask Learning Understanding (MMLU) dataset that was downloaed from HugginFace. It consist of multi-choice questions of four from various fields of educaiton, professional experince, and other branches of knowledge along with correct answers. I will be using the val and test datasets for this project. The aux_train dataset is not used because the goal of this project isn’t to train the model, but to tune hyperparameters and in this case, decoding parameters like temperature, top-p, or max tokens. Further, the aux_train dataset is used for for fitting model weights, not for deciding which decoding setup works best. The the val dataset is a held-out subset and will be used to choose the optimal configuration and used on the test dataset. 
+
+val - 1531
+test - 14042
+???????
+
+Meta Product Manager thign on Linkedin By Spencer
+
+## Metrics
+
 Need to talk about temperature?
+
+Temperature a knob/hyperparameter that researchers check robustness of the model. Essentialy it represents the degree of creativity or rather hallucinations that the mdo
 
 1) 0.0 → No creativity. Always picks the single most likely answer according to its knowledge.
 2) 0.7 → Some creativity. Sometimes picks the 2nd-most likely answer if it’s close in probability.
@@ -67,6 +80,8 @@ For each combination, you:
 Run the model on all questions in the dataset.
 Record accuracy.
 Compare results to find the sweet spot.
+
+
 
 In your project, you’re showing you can experiment, measure, and recommend settings.
 
@@ -100,11 +115,8 @@ Tokens used (optional, proxy for cost)
 
 Compare results and find the sweet spot — highest accuracy with good stability.
 
-## Dataset
-Please fill this in
-
-
 ## Metrics
+
 1) Accuracy = % correct vs. gold
 2) Stability = std/variance across K seeds (repeat each setting K times, e.g., K=3)
 3) Average tokens = prompt+output tokens per question (proxy for cost)
@@ -120,6 +132,7 @@ Temp | Top-p | Acc(val) | Acc±Std   | AvgTokens | Acc/Token
 
 
 ## Deliverables:
+
 1) Heatmap: Accuracy by temperature (x-axis) and top-p (y-axis).
 2) Line plot: Accuracy vs. temperature (separate liens per top-p)
 3) Bar chsrt: accuracy per token for top 3 settings
@@ -137,3 +150,6 @@ Optimized LLM decoding parameters for medical MCQs using the MMLU Professional M
 HF website:
 https://huggingface.co/datasets/cais/mmlu/tree/main/professional_medicine
 
+## Limitations
+
+## Next Steps

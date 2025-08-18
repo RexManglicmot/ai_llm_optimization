@@ -1,0 +1,3 @@
+temp,top_p,acc_mean,tokens_mean,latency_mean,n_total,runs,acc_per_token
+0.0,1.0,0.71,49.0,0.95,220,2,0.014489795918367345
+0.5,0.9,0.65,60.5,1.15,210,2,0.010743801652892562
