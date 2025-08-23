@@ -20,7 +20,7 @@ class DatasetCfg:
 # Model configuration — holds model settings and parameters
 @dataclass
 class ModelCfg:
-    model_id: str       # Name of the model
+    model_id: str       # Name of  model
     fourbit: bool       
     max_new_tokens: int  # Maximum number of tokens to generate during inference
 

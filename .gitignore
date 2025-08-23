@@ -1,7 +1,7 @@
 # Venv
 venv_ai_llm_optimization
 
-# Misc.
+# Misc
 notes/
 pics/
 
@@ -11,3 +11,9 @@ __pycache__/
 .cache/
 .hf/
 results/
+
+# Files
+*.json
+*.jsonl
+*.csv
+*.parquet

@@ -10,4 +10,7 @@ rows = load_split_local("/Users/Rex/vscode/ai_llm_optimization/data/clean/df_val
 print(len(rows), rows[0].keys(), rows[3]["answer"])
 
 # Run: python3 -m tests_scripts.test_data_loader
-# row 3 should be 2
+# 1531 should be the number of rows
+# Dictionary keys should be question, choices, and answer
+# Row 3 should be 2
+# It worked

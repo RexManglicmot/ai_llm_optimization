@@ -1,7 +1,11 @@
 import pandas as pd
 
 def accuracy(y_true, y_pred):
-    """Fraction correct; ignores None predictions."""
+    """
+    Fraction correct; ignores None predictions.
+    Taking corr
+    
+    """
     ok = [int(p == t) for p, t in zip(y_pred, y_true) if p is not None and t is not None]
     return sum(ok) / len(ok) if ok else 0.0
 

@@ -28,27 +28,41 @@ WRite core modules and very
 
 ## Inspiration for this project
 
-On my road to become an AI person, this project came about for two reasons. The first reason came from my own endless curiosity. Optimization was a topic that I read about on the web and wanted to know more. In my own understanding, optimization can mean many things such as accuracy, latency, I/O, etc., the list goes on and on. One component is internal, onesuch is internal knobs like temperature. Another compoent is hardware and cloud services like an NVIDIA or AMD GPU and Google GPU, respectively. The latter componenent cost money, so I thought to myself that I would try to optimize internally and thus this project. The second reason is that some job postings preferred to have candidates to have some experience in optimization, and although it was NOT a hard requirement, I took the task upon myself to learn something new, out of my own free will, and gain a new perspective and appreciation in the growing, meteoric field of AI.
+On my road to become an AI person, this project came about for two reasons. The first reason came from my own endless curiosity. Optimization was a topic that I read about on the web and wanted to know more. In my own understanding, optimization can mean many things such as accuracy, latency, I/O, etc., the list goes on and on. One component is internal, onesuch is internal knobs like temperature. Another compoent is hardware and cloud services like an NVIDIA or AMD GPU and Google GPU, respectively. The latter componenent cost money, so I thought to myself that I would try to optimize internally. The second reason is that some job postings preferred to have candidates to have some experience in optimization, and although it was NOT a hard requirement, I took the task upon myself to learn something new, out of my own free will, and gain a new perspective and appreciation in the growing, meteoric field of AI.
 
-## Introduciton
-LLMs can answer multiple‑choice questions reasonably well, but decoding parameters (how the model chooses its next token) strongly influence both accuracy and cost. In production, teams tune these knobs to deliver reliable quality without overspending on tokens. This project replicates that real‑world workflow on a medical benchmark so the results are measurable and resume‑ready.
+## Introduction
+LLMs can answer multiple‑choice questions reasonably well, but decoding parameters/knobs, especially temperature and  top-p, strongly influence both accuracy and cost. In production, teams tune these knobs to deliver reliable outputs without overspending on tokens. 
 
-The goal of this project is to identify decoding parameter settings that maximize accuracy for medical MCQs while controlling randomness and cost.
+This project tunes **inference-time decoding** specifically **temperature** and **top-p** to maximize accuracy while controlling randomness and token cost. We sweep these knobs on a fixed zero-shot prompt across MMLU subjects, select the best setting on the validation split, then freeze it and report final test performance on the test dataset with an emphasis on accuracy and efficiency (accuracy per token).
 
-Essentially, A small evaluation harness that sweeps decoding knobs (temperature, top-p) on a fixed zero-shot prompt and reports accuracy, stability, and token efficiency on medical MCQs.
+## Business Case / So What?
+
+The business case is to improve answer accuracy while reducing token spend. It is a an internal config-only change mirroring real world issues in industry. The project answers the quesiton, "Is there a way to optimize how we run the model (decoding settings) while reducing inference costs?" 
 
 
 ## Dataset
+The dataset is called the Massive Multitask Learning Understanding (MMLU) dataset that was downloaded from HugginFace. It consist of multi-choice questions of four from multiple fields of educaiton, professional experince, and other branches of knowledge along with correct answers.
 
-The dataset is the Massive Multitask Learning Understanding (MMLU) dataset that was downloaed from HugginFace. It consist of multi-choice questions of four from various fields of educaiton, professional experince, and other branches of knowledge along with correct answers. I will be using the val and test datasets for this project. The aux_train dataset is not used because the goal of this project isn’t to train the model, but to tune hyperparameters and in this case, decoding parameters like temperature, top-p, or max tokens. Further, the aux_train dataset is used for for fitting model weights, not for deciding which decoding setup works best. The the val dataset is a held-out subset and will be used to choose the optimal configuration and used on the test dataset. 
+I will be using the val and test datasets for this project. The aux_train dataset is not used because it is used for fitting model weights, not for decoding. The the val dataset is a held-out subset and will be used to choose the optimal configuration and used on the test dataset. 
 
-val - 1531
-test - 14042
-???????
+The current landscape of the data are afer cleaning and dropping columns:
+
+Columns:
+`question`: A question based on the four subjects above.
+`choices`: Four possible answer choices given a list
+`answer`: Gold answer
+
+Dimensions:
+`val` - 1531 rows
+`test` - 14042 rows
+
+## Model
+
+I'm using model `google/gemma-2-2b-it` which is an instruction 2B parameter from HuggingFace. I chose this model because it is lightweight, fast, and local which runs on my Mac MPS. The model itself is alsoer instruction based mearning it is reliable to return a single answer choice with short prompting. I also set one of config settings `max_new_tokens= 1-2` to foce a single letter/digit. 
 
 Meta Product Manager thign on Linkedin By Spencer
 
-## Metrics
+## Parameters/Knobs
 
 Need to talk about temperature?
 
@@ -100,6 +114,14 @@ If you can tune these knobs to improve accuracy while cutting cost, you deliver 
 
 Need to talk about business case for this project?
 
+## Metrics
+
+1) Accuracy = percentage of correct vs. gold
+2) Stability = std/variance across K seeds (repeat each setting K times, e.g., K=3)
+3) Average tokens = prompt+output tokens per question (proxy for cost)
+4) Accuracy per Token = efficiency metric
+
+
 ## Experiment
 For each (temperature, top-p) pair:
 
@@ -115,41 +137,16 @@ Tokens used (optional, proxy for cost)
 
 Compare results and find the sweet spot — highest accuracy with good stability.
 
-## Metrics
-
-1) Accuracy = % correct vs. gold
-2) Stability = std/variance across K seeds (repeat each setting K times, e.g., K=3)
-3) Average tokens = prompt+output tokens per question (proxy for cost)
-4) Accuracy per Token = efficiency metric
-
-Temp | Top-p | Acc(val) | Acc±Std   | AvgTokens | Acc/Token
------+-------+----------+-----------+-----------+----------
-0.0  | 1.0   | 0.672    | 0.672±0.000 | 58.2     | 0.0115
-0.2  | 0.9   | 0.708    | 0.708±0.006 | 60.1     | 0.0118
-0.5  | 0.9   | 0.701    | 0.701±0.009 | 62.4     | 0.0112
-0.7  | 0.8   | 0.665    | 0.665±0.012 | 64.0     | 0.0104
-
-
-
-## Deliverables:
-
-1) Heatmap: Accuracy by temperature (x-axis) and top-p (y-axis).
-2) Line plot: Accuracy vs. temperature (separate liens per top-p)
-3) Bar chsrt: accuracy per token for top 3 settings
-
-## Expected Outcome:
-
-1) Show that too high randomness (temp > 0.7) hurts accuracy.
-2) Identify a stable “sweet spot” for medical MCQs (often temp ≈ 0.2–0.5, top-p ≈ 0.9).
-
-Possible Resume Bullet:
-
-Optimized LLM decoding parameters for medical MCQs using the MMLU Professional Medicine dataset. Swept temperature and top-p values to identify settings that improved accuracy by 3.8% while maintaining output stability, delivering a reproducible evaluation framework.
-
 
 HF website:
 https://huggingface.co/datasets/cais/mmlu/tree/main/professional_medicine
 
+## Procedure
+
+## Results
+
+
 ## Limitations
+
 
 ## Next Steps
