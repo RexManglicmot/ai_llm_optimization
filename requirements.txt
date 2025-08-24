@@ -7,3 +7,4 @@ python-dotenv
 PyYAML
 torch
 mistral_inference
+huggingface_hub 

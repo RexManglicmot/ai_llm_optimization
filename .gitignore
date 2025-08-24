@@ -17,3 +17,6 @@ results/
 *.jsonl
 *.csv
 *.parquet
+
+#.env
+.env

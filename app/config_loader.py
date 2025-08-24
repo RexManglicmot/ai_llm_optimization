@@ -31,7 +31,7 @@ class DecodingCfg:
     top_ps: List[float]        # List of top-p values for nucleus sampling
     seeds: List[int]           # List of random seeds for reproducibility
 
-# Paths configuration — defines important output and input file locations
+# Paths configuration that defines important output and input file locations
 @dataclass
 class PathsCfg:
     results_dir: str    # Directory where results will be saved
@@ -42,10 +42,10 @@ class PathsCfg:
 # Master configuration object — combines all configuration sections
 @dataclass
 class Config:
-    dataset: DatasetCfg   # Dataset configuration
-    model: ModelCfg       # Model configuration
-    decoding: DecodingCfg # Decoding configuration
-    paths: PathsCfg       # Paths configuration
+    dataset: DatasetCfg   
+    model: ModelCfg       
+    decoding: DecodingCfg 
+    paths: PathsCfg       
 
 
 # Config loader function

@@ -1,28 +1,25 @@
 # app/hf_model.py
 import os
-import time
 from typing import Optional
-
 from transformers import pipeline, AutoTokenizer
 from huggingface_hub import InferenceClient
 from huggingface_hub.errors import HfHubHTTPError
 
-__all__ = ["HFClient"]
 
+__all__ = ["HFClient"]
 
 class HFClient:
     """
-    Unified client with two backends:
+    Minimal unified client:
       - backend="local"     → Transformers pipeline on your machine
       - backend="inference" → Hugging Face Inference (hosted, chat endpoint)
 
-    Env (for inference backend):
+    Env (for inference):
       HF_BACKEND=inference
       HUGGINGFACEHUB_API_TOKEN=hf_xxx
-      # optional routing hint:
-      HF_INFERENCE_PROVIDER=hf-inference
+      # Optional:
+      # HF_INFERENCE_PROVIDER=hf-inference
     """
-
     def __init__(self, model_id: str, backend: Optional[str] = None):
         self.model_id = model_id
         self.backend = (backend or os.getenv("HF_BACKEND") or "local").lower()
@@ -31,13 +28,12 @@ class HFClient:
             token = os.getenv("HUGGINGFACEHUB_API_TOKEN")
             if not token:
                 raise RuntimeError("HUGGINGFACEHUB_API_TOKEN is required for backend='inference'.")
-            provider = os.getenv("HF_INFERENCE_PROVIDER")  # e.g., "hf-inference" (optional)
-            # model_id can be a repo id or a full Inference Endpoint URL
+            provider = os.getenv("HF_INFERENCE_PROVIDER")  # optional
             self.client = InferenceClient(model=model_id, token=token, provider=provider)
             self.pipe = None
             self.tokenizer = None
         else:
-            # Local transformers pipeline (text-generation)
+            # Local transformers pipeline
             self.tokenizer = AutoTokenizer.from_pretrained(model_id)
             self.pipe = pipeline(
                 task="text-generation",
@@ -56,7 +52,7 @@ class HFClient:
         max_new_tokens: int = 2,
     ) -> str:
         """
-        Generate a short completion.
+        Generate a short completion for `prompt`.
         - Greedy if NOT sampling (temp<=0 and top_p>=1.0)
         - Sampling if (temp>0) OR (top_p<1.0)
         """
@@ -65,14 +61,15 @@ class HFClient:
         wants_sampling = ((t is not None and t > 0.0) or (p is not None and p < 1.0))
 
         if self.backend == "inference":
-            # Use HF Inference chat endpoint; minimal retry for transient 5xx/429
+            # Use chat endpoint (serverless often exposes instruct models as chat)
             cc = {
                 "max_tokens": int(max_new_tokens),  # chat API name
                 "temperature": (t if wants_sampling and t is not None else 0.0),
                 "top_p": (p if wants_sampling and p is not None else 1.0),
             }
-            last_err: Optional[Exception] = None
-            for attempt in range(4):  # backoff: 0.5s, 1s, 2s, 4s
+
+            last_err = None
+            for attempt in range(5):  # 5 tries with backoff: ~1s,2s,4s,8s,16s
                 try:
                     resp = self.client.chat_completion(
                         messages=[{"role": "user", "content": prompt}],
@@ -80,17 +77,26 @@ class HFClient:
                     )
                     return resp.choices[0].message.content.strip()
                 except HfHubHTTPError as e:
-                    status = getattr(e.response, "status_code", None)
-                    if status in (429, 500, 502, 503, 504):
-                        time.sleep(0.5 * (2 ** attempt))
+                    # Retry only on server errors (>=500)
+                    code = getattr(e.response, "status_code", None)
+                    if code and code >= 500:
+                        time.sleep(1 * (2 ** attempt))
                         last_err = e
                         continue
                     raise
                 except Exception as e:
-                    time.sleep(0.5 * (2 ** attempt))
+                    # network hiccup → retry
+                    time.sleep(1 * (2 ** attempt))
                     last_err = e
                     continue
-            raise last_err or RuntimeError("HF Inference failed after retries")
+            # if we get here, all retries failed
+            raise last_err
+
+            resp = self.client.chat_completion(
+                messages=[{"role": "user", "content": prompt}],
+                **cc,
+            )
+            return resp.choices[0].message.content.strip()
 
         # Local transformers (text-generation pipeline)
         kwargs = {

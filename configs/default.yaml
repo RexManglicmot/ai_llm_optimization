@@ -4,7 +4,8 @@ dataset:
   test: data/clean/df_test_cleaned.parquet
 
 model:
-  model_id: google/gemma-2-2b-it 
+  model_id: Qwen/Qwen2.5-3B-Instruct
+  # google/gemma-2-2b-it # worked with this, but was overheating
   fourbit: false        
   max_new_tokens: 2
 
